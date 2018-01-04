@@ -14,8 +14,8 @@ install:
 
 script:
 - dirs=$(go list ./...)
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then test -z "`for d in $dirs; do go test -v $d | tee /dev/stderr; done`"; fi
 - dep ensure
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then test -z "`for d in $dirs; do go test -v $d | tee /dev/stderr; done`"; fi
 - bash rungas.sh
   - grep -L -r --include *.go --exclude-dir vendor -P "Copyright (\d{4}|\(c\)) Microsoft" ./ | tee /dev/stderr | test -z "$(< /dev/stdin)"
 - test -z "$(gofmt -s -l $(find ./arm/* -type d -print) | tee /dev/stderr)"
