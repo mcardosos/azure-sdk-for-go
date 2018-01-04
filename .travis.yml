@@ -11,9 +11,11 @@ install:
 - go get -u golang.org/x/net/context
 - go get -u gopkg.in/godo.v2/cmd/godo
 - export GO15VENDOREXPERIMENT=1
-- dep ensure
 
 script:
+- dirs=$(go list ./...)
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then test -z "`for d in $dirs; do go test -v $d | tee /dev/stderr; done`"; fi
+- dep ensure
 - bash rungas.sh
   - grep -L -r --include *.go --exclude-dir vendor -P "Copyright (\d{4}|\(c\)) Microsoft" ./ | tee /dev/stderr | test -z "$(< /dev/stdin)"
 - test -z "$(gofmt -s -l $(find ./arm/* -type d -print) | tee /dev/stderr)"
@@ -36,7 +38,6 @@ script:
   # - test -z "$(golint ./services/... | tee /dev/stderr)"
 - go test -v ./management/...
 - go test -v ./arm/...
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then go test -v ./storage/... -ow; fi'
 - bash ./tools/profileBuilder/test.sh
 - go test -v ./datalake-store/...
 - go test -v ./dataplane/...
